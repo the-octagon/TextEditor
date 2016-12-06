@@ -39,6 +39,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.text.Font;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 /**
  *
@@ -49,7 +55,7 @@ public class TextEditor extends Application {
     private boolean changed = false;
     private String currentFile = "Untitled";
     private FileChooser dialog = new FileChooser();
-    File file;
+    private File file;
     private BorderPane root = new BorderPane();
     private TextArea textArea = new TextArea();
     private Scene scene = new Scene(root, 640, 480);
@@ -105,20 +111,24 @@ public class TextEditor extends Application {
         
         //create Help Menu and MenuItems
         final Menu helpMenu = new Menu("Help");
-            MenuItem helpMenu1 = new MenuItem("About");
-            
-                helpMenu1.setOnAction(new EventHandler<ActionEvent>() {
+            MenuItem helpAbout = new MenuItem("About");
+                    helpAbout.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent t) {
                         aboutDialog();
                     }
                 });
-            MenuItem helpMenu2 = new MenuItem("Help");
-            MenuItem helpMenu3 = new MenuItem("Contact");
+            MenuItem helpHelp = new MenuItem("Help");
+            MenuItem helpContact = new MenuItem("Contact");
+                helpContact.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        contactDialog();
+                    }
+                });
             
             //add help MenuItems to helpMenu
-            helpMenu.getItems().add(helpMenu1);
-            helpMenu.getItems().add(helpMenu2);
-            helpMenu.getItems().add(helpMenu3);
+            helpMenu.getItems().add(helpAbout);
+            helpMenu.getItems().add(helpHelp);
+            helpMenu.getItems().add(helpContact);
         
         MenuBar menuBar = new MenuBar();
         menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
@@ -254,6 +264,27 @@ public class TextEditor extends Application {
             alert.setContentText("(C) 2016 Andrew King\n\nThanks:\nL\nO\nE");
 
             alert.showAndWait();
+        }
+        
+        static void contactDialog() {
+            Hyperlink gHLink = new Hyperlink("http://www.github.com/the-octagon");
+            final WebView browser = new WebView();
+            final WebEngine webEngine = browser.getEngine();
+            
+            gHLink.setText("http://www.github.com/the-octagon");
+            gHLink.setFont(Font.font("Arial", 12));
+            
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("TextEditor");
+            alert.setHeaderText("Contact");
+            
+            FlowPane fp = new FlowPane();
+            Label lbl = new Label("andrew.f.king@gmail.com");
+            fp.getChildren().addAll( lbl, gHLink);
+            alert.getDialogPane().contentProperty().set( fp );
+
+            alert.showAndWait();
+            
         }
 
     public static void main(String[] args) {
