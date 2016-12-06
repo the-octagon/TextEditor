@@ -153,7 +153,6 @@ public class TextEditor extends Application {
                             confirmClose();
                             saveFile();
                             changed = false;
-                            
                         }else {
                             textArea.setText("");
                             changed = false;
