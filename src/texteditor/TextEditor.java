@@ -16,12 +16,15 @@
  */
 package texteditor;
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -41,6 +44,8 @@ import javafx.stage.Stage;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebEngine;
@@ -117,7 +122,12 @@ public class TextEditor extends Application {
                         aboutDialog();
                     }
                 });
-            MenuItem helpHelp = new MenuItem("Help");
+            MenuItem helpLicense = new MenuItem("License");
+                    helpLicense.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        licenseDialog();
+                    }
+                });
             MenuItem helpContact = new MenuItem("Contact");
                 helpContact.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent t) {
@@ -127,7 +137,7 @@ public class TextEditor extends Application {
             
             //add help MenuItems to helpMenu
             helpMenu.getItems().add(helpAbout);
-            helpMenu.getItems().add(helpHelp);
+            helpMenu.getItems().add(helpLicense);
             helpMenu.getItems().add(helpContact);
         
         MenuBar menuBar = new MenuBar();
@@ -209,6 +219,7 @@ public class TextEditor extends Application {
                 writeOut();
                 currentFile = file.getName();
                 TextEditor.getStage().setTitle(currentFile + " - TextEditor");
+                changed = false;
             } else {
                 writeOut();
             }
@@ -266,6 +277,37 @@ public class TextEditor extends Application {
             alert.showAndWait();
         }
         
+        static void licenseDialog() {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            Image gplLogo = new Image("https://www.gnu.org/graphics/gplv3-88x31.png");
+            ImageView gplLogoImageView= new ImageView(gplLogo);
+            
+            alert.setTitle("License Information");
+            alert.setHeaderText("TextEditor - a simple text editor");
+            alert.setGraphic(gplLogoImageView);
+            alert.getDialogPane().setPrefSize(550, 350);
+            alert.setResizable(true);
+            alert.setContentText("(C) 2016 Andrew King\n" + 
+            "\n" +
+            "This program is free software: you can redistribute it and/or modify " +
+            "it under the terms of the GNU General Public License as published by " +
+            "the Free Software Foundation, either version 3 of the License, or " +
+            "(at your option) any later version.\n" +
+            "\n" +
+            "This program is distributed in the hope that it will be useful, " +
+            "but WITHOUT ANY WARRANTY; without even the implied warranty of " +
+            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the " +
+            "GNU General Public License for more details.\n" +
+            "\n" +
+            "You should have received a copy of the GNU General Public License " +
+            "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
+            
+            alert.showAndWait();
+        }
+        
+        
+
+        
         static void contactDialog() {
             Hyperlink gHLink = new Hyperlink("http://www.github.com/the-octagon");
             final WebView browser = new WebView();
@@ -279,11 +321,22 @@ public class TextEditor extends Application {
             alert.setHeaderText("Contact");
             
             FlowPane fp = new FlowPane();
-            Label lbl = new Label("andrew.f.king@gmail.com");
+            Label lbl = new Label("github.the.octagon+TextEditor@gmail.com");
             fp.getChildren().addAll( lbl, gHLink);
             alert.getDialogPane().contentProperty().set( fp );
+            
+            gHLink.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        openWebpage("http://www.github.com/the-octagon");
+                    }
+                });
+            
 
             alert.showAndWait();
+            
+        }
+        
+        public static void openWebpage(String url) {
             
         }
 
