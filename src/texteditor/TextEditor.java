@@ -16,17 +16,16 @@
  */
 package texteditor;
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
 import javafx.application.Application;
+import javafx.application.HostServices;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -43,19 +42,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Font;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 
 /**
  *
  * @author andy
  */
 public class TextEditor extends Application {
+
     private static Stage stage;
     private boolean changed = false;
     private String currentFile = "Untitled";
@@ -65,10 +61,11 @@ public class TextEditor extends Application {
     private TextArea textArea = new TextArea();
     private Scene scene = new Scene(root, 640, 480);
     
-    
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
+        
+        
                 
         //create File Menu and MenuItems
         final Menu fileMenu = new Menu("File");
@@ -93,10 +90,18 @@ public class TextEditor extends Application {
                         saveFile();
                     }
                 });
+            MenuItem fileClose = new MenuItem("Close");
+                fileClose.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        Platform.exit();
+                    }
+                });    
+                
             //add File MenuItems to fileMenu
             fileMenu.getItems().add(fileNew);
             fileMenu.getItems().add(fileOpen);
             fileMenu.getItems().add(fileSave);
+            fileMenu.getItems().add(fileClose);
             
         //create Edit Menu and MenuItems
         final Menu editMenu = new Menu("Edit");
@@ -309,28 +314,35 @@ public class TextEditor extends Application {
 
         
         static void contactDialog() {
+            Image gHLogo = new Image("https://cdn0.iconfinder.com/data/icons/octicons/1024/mark-github-64.png");
+            ImageView logoIV = new ImageView(gHLogo);
+            
             Hyperlink gHLink = new Hyperlink("http://www.github.com/the-octagon");
-            final WebView browser = new WebView();
-            final WebEngine webEngine = browser.getEngine();
-            
-            gHLink.setText("http://www.github.com/the-octagon");
-            gHLink.setFont(Font.font("Arial", 12));
-            
+            gHLink.setText("@the-octagon");
+            gHLink.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent e)
+                {
+
+                    Application a = new Application() {
+
+                        @Override
+                        public void start(Stage stage)
+                        {
+                        }
+                    };
+                    a.getHostServices().showDocument("http://www.github.com/the-octagon");
+
+                }
+            });
+
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("TextEditor");
             alert.setHeaderText("Contact");
             
             FlowPane fp = new FlowPane();
-            Label lbl = new Label("github.the.octagon+TextEditor@gmail.com");
-            fp.getChildren().addAll( lbl, gHLink);
+            fp.getChildren().addAll(logoIV, gHLink);
             alert.getDialogPane().contentProperty().set( fp );
-            
-            gHLink.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        openWebpage("http://www.github.com/the-octagon");
-                    }
-                });
-            
 
             alert.showAndWait();
             
