@@ -16,12 +16,14 @@
  */
 package texteditor;
 
+import java.lang.Class;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.HostServices;
@@ -44,6 +46,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import static javafx.scene.input.DataFormat.URL;
 import javafx.scene.layout.FlowPane;
 
 /**
@@ -60,6 +63,9 @@ public class TextEditor extends Application {
     private BorderPane root = new BorderPane();
     private TextArea textArea = new TextArea();
     private Scene scene = new Scene(root, 640, 480);
+    private static TextEditor t = new TextEditor();
+    private static Class tc = t.getClass();
+
     
     @Override
     public void start(Stage primaryStage) {
@@ -284,9 +290,10 @@ public class TextEditor extends Application {
         
         static void licenseDialog() {
             Alert alert = new Alert(AlertType.INFORMATION);
-            Image gplLogo = new Image("https://www.gnu.org/graphics/gplv3-88x31.png");
+            File gplFile = new File("./images/gplv3-88x31.png");
+            URL url = tc.getResource("/gplv3-88x31.png");
+            Image gplLogo = new Image(url.toString());
             ImageView gplLogoImageView= new ImageView(gplLogo);
-            
             alert.setTitle("License Information");
             alert.setHeaderText("TextEditor - a simple text editor");
             alert.setGraphic(gplLogoImageView);
@@ -314,8 +321,12 @@ public class TextEditor extends Application {
 
         
         static void contactDialog() {
-            Image gHLogo = new Image("https://cdn0.iconfinder.com/data/icons/octicons/1024/mark-github-64.png");
-            ImageView logoIV = new ImageView(gHLogo);
+            File ghFile = new File("./images/GitHub-Mark-64px.png");
+            System.out.println(ghFile.isFile());
+            URL url = tc.getResource("/GitHub-Mark-64px.png");
+            System.out.println(url.toString());
+            Image ghImage = new Image(url.toString());
+            ImageView ghImageView = new ImageView(ghImage);
             
             Hyperlink gHLink = new Hyperlink("http://www.github.com/the-octagon");
             gHLink.setText("@the-octagon");
@@ -341,7 +352,7 @@ public class TextEditor extends Application {
             alert.setHeaderText("Contact");
             
             FlowPane fp = new FlowPane();
-            fp.getChildren().addAll(logoIV, gHLink);
+            fp.getChildren().addAll(ghImageView, gHLink);
             alert.getDialogPane().contentProperty().set( fp );
 
             alert.showAndWait();
