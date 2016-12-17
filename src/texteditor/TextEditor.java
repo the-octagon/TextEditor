@@ -16,7 +16,6 @@
  */
 package texteditor;
 
-import java.lang.Class;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import javafx.application.Application;
-import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -46,7 +44,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import static javafx.scene.input.DataFormat.URL;
 import javafx.scene.layout.FlowPane;
 
 /**
@@ -173,6 +170,12 @@ public class TextEditor extends Application {
         textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 changed = true;
+            }
+        });
+        primaryStage.setOnCloseRequest(event -> {
+            confirmClose();
+            if (changed) {
+                event.consume();
             }
         });
     }
