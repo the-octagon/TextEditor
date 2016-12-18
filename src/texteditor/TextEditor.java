@@ -1,4 +1,4 @@
-/*
+ /*
  * This file is part of TextEditor.
  * 
  * TextEditor is free software: you can redistribute it and/or modify
@@ -46,10 +46,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 
-/**
- *
- * @author andy
- */
 public class TextEditor extends Application {
 
     private static Stage stage;
@@ -61,100 +57,94 @@ public class TextEditor extends Application {
     private TextArea textArea = new TextArea();
     private Scene scene = new Scene(root, 640, 480);
     private static TextEditor t = new TextEditor();
-    private static Class tc = t.getClass();
+    protected static Class tc = t.getClass();
 
     
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
-        
-        
-                
-        //create File Menu and MenuItems
-        final Menu fileMenu = new Menu("File");
-            MenuItem fileNew = new MenuItem("New");
-                fileNew.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        newFile();
-                    }
-                });
-            MenuItem fileOpen = new MenuItem("Open");
-                fileOpen.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        //if existing TextArea not null
-                            //save or trash
-                        //pick new file
-                        openFile();
-                    }
-                });
-            MenuItem fileSave = new MenuItem("Save");
-                fileSave.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        saveFile();
-                    }
-                });
-            MenuItem fileClose = new MenuItem("Close");
-                fileClose.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        Platform.exit();
-                    }
-                });    
-                
-            //add File MenuItems to fileMenu
-            fileMenu.getItems().add(fileNew);
-            fileMenu.getItems().add(fileOpen);
-            fileMenu.getItems().add(fileSave);
-            fileMenu.getItems().add(fileClose);
-            
-        //create Edit Menu and MenuItems
-        final Menu editMenu = new Menu("Edit");
-            MenuItem editCut = new MenuItem("Cut");
-            MenuItem editCopy = new MenuItem("Copy");
-            MenuItem editPaste = new MenuItem("Paste");
-            
-            //add edit MenuItems to editMenu
-            editMenu.getItems().add(editCut);
-            editMenu.getItems().add(editCopy);
-            editMenu.getItems().add(editPaste);
-            
-            
-        //create View Menu and MenuItems    
-        final Menu viewMenu = new Menu("View");
-            //figure out something to put in View menu
-        
-        //create Help Menu and MenuItems
-        final Menu helpMenu = new Menu("Help");
-            MenuItem helpAbout = new MenuItem("About");
-                    helpAbout.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        aboutDialog();
-                    }
-                });
-            MenuItem helpLicense = new MenuItem("License");
-                    helpLicense.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        licenseDialog();
-                    }
-                });
-            MenuItem helpContact = new MenuItem("Contact");
-                helpContact.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        contactDialog();
-                    }
-                });
-            
-            //add help MenuItems to helpMenu
-            helpMenu.getItems().add(helpAbout);
-            helpMenu.getItems().add(helpLicense);
-            helpMenu.getItems().add(helpContact);
-        
+        /*String[][] menuSource = {
+            {"File", "New","Open","Save","Close"},
+            {"Edit", "Cut","Copy","Paste"},
+            {"View"},
+            {"Help","About","License","Contact"}
+        };
+        MyMenuBar newMyMenuBar = new MyMenuBar(menuSource);
+//        myMenuBar.prefWidthProperty().bind(tc.getStage().widthProperty());        */
+
+
+        //create menubar and contents
         MenuBar menuBar = new MenuBar();
+        
+        final Menu fileMenu = new Menu("File");
+        final Menu editMenu = new Menu("Edit");
+        final Menu viewMenu = new Menu("View");
+        final Menu helpMenu = new Menu("Help");
+        
+        //create menuitems for each menu
+        MenuItem fileNew = new MenuItem("New");
+        MenuItem fileOpen = new MenuItem("Open");
+        MenuItem fileSave = new MenuItem("Save");
+
+        MenuItem editCut = new MenuItem("Cut");
+        MenuItem editCopy = new MenuItem("Copy");
+        MenuItem editPaste = new MenuItem("Paste");
+
+        MenuItem helpAbout = new MenuItem("About");
+        MenuItem helpLicense = new MenuItem("License");
+        MenuItem helpContact = new MenuItem("Contact");
+
+        //add menuitems to menus
+        fileMenu.getItems().add(fileNew);
+        fileMenu.getItems().add(fileOpen);
+        fileMenu.getItems().add(fileSave);
+
+        editMenu.getItems().add(editCut);
+        editMenu.getItems().add(editCopy);
+        editMenu.getItems().add(editPaste);
+
+        helpMenu.getItems().add(helpAbout);
+        helpMenu.getItems().add(helpLicense);
+        helpMenu.getItems().add(helpContact);
+        
+        //stretch menutbar accross stage and add menus to menubar
         menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(editMenu);
         menuBar.getMenus().add(viewMenu);
         menuBar.getMenus().add(helpMenu);
-     
+
+        //listeners for menuitems
+        fileNew.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { newFile(); }
+        });
+        fileOpen.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { openFile(); }
+        });
+        fileSave.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { saveFile(); }
+        });
+        helpAbout.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { aboutDialog(); }
+        });
+        helpLicense.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { licenseDialog(); }
+        });
+        helpContact.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { contactDialog(); }
+        });
+        
+        //if anything is pressed, mark as document as changed
+        textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) { changed = true; }
+        });
+        
+        //confirm saving on each exit
+        primaryStage.setOnCloseRequest(event -> {
+            if (changed){ confirmClose(); }
+            if (changed){ event.consume(); }
+        });
+        
         textArea.setWrapText(true);
         
         root.setTop(menuBar);
@@ -165,30 +155,17 @@ public class TextEditor extends Application {
         primaryStage.setTitle(currentFile + " - TextEditor");
         primaryStage.setScene(scene);
         primaryStage.show();
-        
-        //listeners
-        textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent ke) {
-                changed = true;
-            }
-        });
-        primaryStage.setOnCloseRequest(event -> {
-            confirmClose();
-            if (changed) {
-                event.consume();
-            }
-        });
     }
         //methods
         static Stage getStage() { return stage; }
         
         void newFile() {
             if (changed) {
-                            confirmClose();
-                        }else {
-                            textArea.setText("");
-                            changed = false;
-                        }
+                confirmClose();
+            }else {
+                textArea.setText("");
+                changed = false;
+            }
         }
         
         void openFile() {
@@ -362,10 +339,6 @@ public class TextEditor extends Application {
             
         }
         
-        public static void openWebpage(String url) {
-            
-        }
-
     public static void main(String[] args) {
         launch(args);
     }
