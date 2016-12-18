@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -41,6 +40,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -89,6 +89,9 @@ public class TextEditor extends Application {
         MenuItem editCut = new MenuItem("Cut");
         MenuItem editCopy = new MenuItem("Copy");
         MenuItem editPaste = new MenuItem("Paste");
+        
+        CheckMenuItem viewWordWrap = new CheckMenuItem("Word Wrap");
+            viewWordWrap.setSelected(true);
 
         MenuItem helpAbout = new MenuItem("About");
         MenuItem helpLicense = new MenuItem("License");
@@ -102,6 +105,9 @@ public class TextEditor extends Application {
         editMenu.getItems().add(editCut);
         editMenu.getItems().add(editCopy);
         editMenu.getItems().add(editPaste);
+        
+        viewMenu.getItems().add(viewWordWrap);
+            
 
         helpMenu.getItems().add(helpAbout);
         helpMenu.getItems().add(helpLicense);
@@ -124,6 +130,11 @@ public class TextEditor extends Application {
         fileSave.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { saveFile(); }
         });
+        
+        viewWordWrap.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { setWordWrap(); }
+        });
+        
         helpAbout.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { aboutDialog(); }
         });
@@ -338,9 +349,16 @@ public class TextEditor extends Application {
             alert.showAndWait();
             
         }
+        private void setWordWrap() {
+            if (textArea.isWrapText()) {
+                textArea.setWrapText(false);
+            } else {
+                textArea.setWrapText(true);
+            }
+                
+        }
         
     public static void main(String[] args) {
         launch(args);
     }
 }
-    
