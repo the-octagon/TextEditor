@@ -48,6 +48,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.text.Font;
 
 public class TextEditor extends Application {
 
@@ -100,6 +101,7 @@ public class TextEditor extends Application {
         CheckMenuItem viewWordWrap = new CheckMenuItem("Word Wrap");
             viewWordWrap.setSelected(true);
         MenuItem viewZoomIn = new MenuItem("Zoom In");
+        MenuItem viewZoomDefault = new MenuItem("Zoom 100%");
         MenuItem viewZoomOut = new MenuItem("Zoom Out");
 
         MenuItem helpAbout = new MenuItem("About");
@@ -111,17 +113,14 @@ public class TextEditor extends Application {
         
         editMenu.getItems().addAll(editCut, editCopy, editPaste);
         
-        viewMenu.getItems().addAll(viewWordWrap, viewZoomIn, viewZoomOut);
+        viewMenu.getItems().addAll(viewWordWrap, viewZoomIn, viewZoomDefault, viewZoomOut);
 
         helpMenu.getItems().addAll(helpAbout, helpLicense, helpContact);
         
         //stretch menubar accross stage and add menus to menubar
         menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
-        menuBar.getMenus().add(fileMenu);
-        menuBar.getMenus().add(editMenu);
-        menuBar.getMenus().add(viewMenu);
-        menuBar.getMenus().add(helpMenu);
-
+        menuBar.getMenus().addAll(fileMenu, editMenu, viewMenu,helpMenu);
+        
         //listeners for menuitems
         fileNew.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { newFile(); }
@@ -141,8 +140,18 @@ public class TextEditor extends Application {
         editPaste.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { pasteText(); }
         });
+        
         viewWordWrap.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { setWordWrap(); }
+        });
+        viewZoomIn.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { zoomIn(); }
+        });
+        viewZoomDefault.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { zoomDefault(); }
+        });
+        viewZoomOut.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { zoomOut(); }
         });
         
         helpAbout.setOnAction(new EventHandler<ActionEvent>() {
@@ -380,7 +389,7 @@ public class TextEditor extends Application {
     }
     
     //set word wrap on or off
-    private void setWordWrap() {
+    void setWordWrap() {
         if (textArea.isWrapText()) {
             textArea.setWrapText(false);
         } else {
@@ -405,6 +414,17 @@ public class TextEditor extends Application {
             alert.setContentText("An unknown error has occured.");
             alert.showAndWait();
         }
+    }
+    
+    void zoomDefault() {
+        textArea.setFont(new Font(13));
+    }
+    void zoomIn() {
+        textArea.setFont(new Font(textArea.getFont().getSize() + 1));
+    }
+    
+    void zoomOut() {
+        textArea.setFont(new Font(textArea.getFont().getSize() - 1));
     }
 
     public static void main(String[] args) {
