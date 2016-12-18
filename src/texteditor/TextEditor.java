@@ -167,197 +167,205 @@ public class TextEditor extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-        //methods
-        static Stage getStage() { return stage; }
-        
-        void newFile() {
-            if (changed) {
-                confirmClose();
-            }else {
-                textArea.setText("");
-                changed = false;
-            }
+    //END OF START
+    
+    
+    
+    
+    //misc methods for program actions
+
+
+    //open dialog with info about program
+    static void aboutDialog() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("About TextEditor");
+        alert.setHeaderText("TextEditor");
+        alert.setContentText("(C) 2016 Andrew King\n\nThanks:\nL\nO\nE");
+
+        alert.showAndWait();
+    }
+
+    //if window contents are marked as changed, open dialog to confirm changes
+    void confirmClose() {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Warning");
+        alert.setHeaderText("You have unsaved changes.");
+        alert.setContentText("Choose your option.");
+
+        ButtonType buttonTypeOne = new ButtonType("Save");
+        ButtonType buttonTypeTwo = new ButtonType("Discard");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == buttonTypeOne){
+            saveFile();
+        } else if (result.get() == buttonTypeTwo) {
+            changed = false;
+            newFile();
+        } else {
+            // ... user chose CANCEL or closed the dialog
         }
-        
-        void openFile() {
+    }
+    
+    //open dialog with contact info
+    static void contactDialog() {
+        File ghFile = new File("./images/GitHub-Mark-64px.png");
+        System.out.println(ghFile.isFile());
+        URL url = tc.getResource("/GitHub-Mark-64px.png");
+        System.out.println(url.toString());
+        Image ghImage = new Image(url.toString());
+        ImageView ghImageView = new ImageView(ghImage);
+
+        Hyperlink gHLink = new Hyperlink("http://www.github.com/the-octagon");
+        gHLink.setText("@the-octagon");
+        gHLink.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e)
+            {
+
+                Application a = new Application() {
+
+                    @Override
+                    public void start(Stage stage)
+                    {
+                    }
+                };
+                a.getHostServices().showDocument("http://www.github.com/the-octagon");
+
+            }
+        });
+
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("TextEditor");
+        alert.setHeaderText("Contact");
+
+        FlowPane fp = new FlowPane();
+        fp.getChildren().addAll(ghImageView, gHLink);
+        alert.getDialogPane().contentProperty().set( fp );
+
+        alert.showAndWait();
+    }
+
+    static Stage getStage() { return stage; }
+
+        //open dialog with info about license
+    static void licenseDialog() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        File gplFile = new File("./images/gplv3-88x31.png");
+        URL url = tc.getResource("/gplv3-88x31.png");
+        Image gplLogo = new Image(url.toString());
+        ImageView gplLogoImageView= new ImageView(gplLogo);
+        alert.setTitle("License Information");
+        alert.setHeaderText("TextEditor - a simple text editor");
+        alert.setGraphic(gplLogoImageView);
+        alert.getDialogPane().setPrefSize(550, 350);
+        alert.setResizable(true);
+        alert.setContentText("(C) 2016 Andrew King\n" + 
+        "\n" +
+        "This program is free software: you can redistribute it and/or modify " +
+        "it under the terms of the GNU General Public License as published by " +
+        "the Free Software Foundation, either version 3 of the License, or " +
+        "(at your option) any later version.\n" +
+        "\n" +
+        "This program is distributed in the hope that it will be useful, " +
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of " +
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the " +
+        "GNU General Public License for more details.\n" +
+        "\n" +
+        "You should have received a copy of the GNU General Public License " +
+        "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
+
+        alert.showAndWait();
+    }
+    
+    //create new file
+    void newFile() {
+        if (changed) {
+            confirmClose();
+        }else {
+            textArea.setText("");
+            changed = false;
+        }
+    }
+
+    //open existing file
+    void openFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        file = fileChooser.showOpenDialog(new Stage());
+
+        try {
+            FileReader fileReader = new FileReader(file.getPath());
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String inputFile = "";
+            String textFieldReadable = bufferedReader.readLine();
+
+            while (textFieldReadable != null){
+                inputFile += (textFieldReadable + "\n");
+                textFieldReadable = bufferedReader.readLine();
+            }
+            textArea.setText(inputFile);
+            currentFile = file.getName();
+            TextEditor.getStage().setTitle(currentFile + " - TextEditor");
+
+        } catch (FileNotFoundException ex) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("File not found.");
+            alert.showAndWait();
+        } catch (IOException ex) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("An unknown error .");
+            alert.showAndWait();
+        }
+    }
+
+    //if file is new, create file and writeOut() or just writeOut()
+    void saveFile() {
+        if (currentFile.equals("Untitled")) {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open File");
-            file = fileChooser.showOpenDialog(new Stage());
-            
-            try {
-                FileReader fileReader = new FileReader(file.getPath());
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-                String inputFile = "";
-                String textFieldReadable = bufferedReader.readLine();
-
-                while (textFieldReadable != null){
-                    inputFile += (textFieldReadable + "\n");
-                    textFieldReadable = bufferedReader.readLine();
-                }
-                textArea.setText(inputFile);
-                currentFile = file.getName();
-                TextEditor.getStage().setTitle(currentFile + " - TextEditor");
-
-                
-            } catch (FileNotFoundException ex) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("File not found.");
-                alert.showAndWait();
-            } catch (IOException ex) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("An unknown error .");
-                alert.showAndWait();
-            }    
-            
+            file = fileChooser.showSaveDialog(new Stage());
+            writeOut();
+            currentFile = file.getName();
+            TextEditor.getStage().setTitle(currentFile + " - TextEditor");
+            changed = false;
+        } else {
+            writeOut();
         }
-        
-        void saveFile() {
-            if (currentFile.equals("Untitled")) {
-                FileChooser fileChooser = new FileChooser();
-                file = fileChooser.showSaveDialog(new Stage());
-                writeOut();
-                currentFile = file.getName();
-                TextEditor.getStage().setTitle(currentFile + " - TextEditor");
-                changed = false;
-            } else {
-                writeOut();
-            }
+    }
+    
+    //set word wrap on or off
+    private void setWordWrap() {
+        if (textArea.isWrapText()) {
+            textArea.setWrapText(false);
+        } else {
+            textArea.setWrapText(true);
         }
-        
-        void writeOut() {
-            try {
-                FileWriter fw = new FileWriter(file.getAbsoluteFile(), false);
-                fw.write(textArea.getText());
-                fw.close();
-            } catch (FileNotFoundException ex) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("File not found.");
-                alert.showAndWait();
-            } catch (IOException ex) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("An unknown error has occured.");
-                alert.showAndWait();
-            }
-            
-        }
-        
-        void confirmClose() {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Warning");
-            alert.setHeaderText("You have unsaved changes.");
-            alert.setContentText("Choose your option.");
+    }
 
-            ButtonType buttonTypeOne = new ButtonType("Save");
-            ButtonType buttonTypeTwo = new ButtonType("Discard");
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-
-            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            
-            if (result.get() == buttonTypeOne){
-                saveFile();
-            } else if (result.get() == buttonTypeTwo) {
-                changed = false;
-                newFile();
-            } else {
-                // ... user chose CANCEL or closed the dialog
-            }
-        }
-        
-        static void aboutDialog() {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("About TextEditor");
-            alert.setHeaderText("TextEditor");
-            alert.setContentText("(C) 2016 Andrew King\n\nThanks:\nL\nO\nE");
-
+    //write contents of window to file to file
+    void writeOut() {
+        try {
+            FileWriter fw = new FileWriter(file.getAbsoluteFile(), false);
+            fw.write(textArea.getText());
+            fw.close();
+        } catch (FileNotFoundException ex) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("File not found.");
+            alert.showAndWait();
+        } catch (IOException ex) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("An unknown error has occured.");
             alert.showAndWait();
         }
-        
-        static void licenseDialog() {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            File gplFile = new File("./images/gplv3-88x31.png");
-            URL url = tc.getResource("/gplv3-88x31.png");
-            Image gplLogo = new Image(url.toString());
-            ImageView gplLogoImageView= new ImageView(gplLogo);
-            alert.setTitle("License Information");
-            alert.setHeaderText("TextEditor - a simple text editor");
-            alert.setGraphic(gplLogoImageView);
-            alert.getDialogPane().setPrefSize(550, 350);
-            alert.setResizable(true);
-            alert.setContentText("(C) 2016 Andrew King\n" + 
-            "\n" +
-            "This program is free software: you can redistribute it and/or modify " +
-            "it under the terms of the GNU General Public License as published by " +
-            "the Free Software Foundation, either version 3 of the License, or " +
-            "(at your option) any later version.\n" +
-            "\n" +
-            "This program is distributed in the hope that it will be useful, " +
-            "but WITHOUT ANY WARRANTY; without even the implied warranty of " +
-            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the " +
-            "GNU General Public License for more details.\n" +
-            "\n" +
-            "You should have received a copy of the GNU General Public License " +
-            "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
-            
-            alert.showAndWait();
-        }
-        
-        
+    }
 
-        
-        static void contactDialog() {
-            File ghFile = new File("./images/GitHub-Mark-64px.png");
-            System.out.println(ghFile.isFile());
-            URL url = tc.getResource("/GitHub-Mark-64px.png");
-            System.out.println(url.toString());
-            Image ghImage = new Image(url.toString());
-            ImageView ghImageView = new ImageView(ghImage);
-            
-            Hyperlink gHLink = new Hyperlink("http://www.github.com/the-octagon");
-            gHLink.setText("@the-octagon");
-            gHLink.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent e)
-                {
-
-                    Application a = new Application() {
-
-                        @Override
-                        public void start(Stage stage)
-                        {
-                        }
-                    };
-                    a.getHostServices().showDocument("http://www.github.com/the-octagon");
-
-                }
-            });
-
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("TextEditor");
-            alert.setHeaderText("Contact");
-            
-            FlowPane fp = new FlowPane();
-            fp.getChildren().addAll(ghImageView, gHLink);
-            alert.getDialogPane().contentProperty().set( fp );
-
-            alert.showAndWait();
-            
-        }
-        private void setWordWrap() {
-            if (textArea.isWrapText()) {
-                textArea.setWrapText(false);
-            } else {
-                textArea.setWrapText(true);
-            }
-                
-        }
-        
     public static void main(String[] args) {
         launch(args);
     }
