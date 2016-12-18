@@ -99,28 +99,23 @@ public class TextEditor extends Application {
         
         CheckMenuItem viewWordWrap = new CheckMenuItem("Word Wrap");
             viewWordWrap.setSelected(true);
+        MenuItem viewZoomIn = new MenuItem("Zoom In");
+        MenuItem viewZoomOut = new MenuItem("Zoom Out");
 
         MenuItem helpAbout = new MenuItem("About");
         MenuItem helpLicense = new MenuItem("License");
         MenuItem helpContact = new MenuItem("Contact");
 
         //add menuitems to menus
-        fileMenu.getItems().add(fileNew);
-        fileMenu.getItems().add(fileOpen);
-        fileMenu.getItems().add(fileSave);
-
-        editMenu.getItems().add(editCut);
-        editMenu.getItems().add(editCopy);
-        editMenu.getItems().add(editPaste);
+        fileMenu.getItems().addAll(fileNew, fileOpen, fileSave);
         
-        viewMenu.getItems().add(viewWordWrap);
-            
-
-        helpMenu.getItems().add(helpAbout);
-        helpMenu.getItems().add(helpLicense);
-        helpMenu.getItems().add(helpContact);
+        editMenu.getItems().addAll(editCut, editCopy, editPaste);
         
-        //stretch menutbar accross stage and add menus to menubar
+        viewMenu.getItems().addAll(viewWordWrap, viewZoomIn, viewZoomOut);
+
+        helpMenu.getItems().addAll(helpAbout, helpLicense, helpContact);
+        
+        //stretch menubar accross stage and add menus to menubar
         menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(editMenu);
@@ -289,7 +284,7 @@ public class TextEditor extends Application {
     //used for updating the window title
     static Stage getStage() { return stage; }
 
-        //open dialog with info about license
+    //open dialog with info about license
     void licenseDialog() {
         Alert alert = new Alert(AlertType.INFORMATION);
         File gplFile = new File("./images/gplv3-88x31.png");
