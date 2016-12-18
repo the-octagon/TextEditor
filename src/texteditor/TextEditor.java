@@ -137,15 +137,15 @@ public class TextEditor extends Application {
         fileSave.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { saveFile(); }
         });
-        
-        editCopy.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) { copyText(); }
-        });
-        
         editCut.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { cutText(); }
         });
-        
+        editCopy.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { copyText(); }
+        });
+        editPaste.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { pasteText(); }
+        });
         viewWordWrap.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { setWordWrap(); }
         });
@@ -361,7 +361,15 @@ public class TextEditor extends Application {
             alert.showAndWait();
         }
     }
-
+    
+    //paste from clipboard
+    void pasteText() {
+        if (clipboard.getString() != null) {
+            clipboardText = clipboard.getString();
+            textArea.insertText(textArea.getCaretPosition(), clipboardText);
+        }
+    }
+    
     //if file is new, create file and writeOut() or just writeOut()
     void saveFile() {
         if (currentFile.equals("Untitled")) {
