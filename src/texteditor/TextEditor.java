@@ -47,6 +47,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Font;
 
@@ -167,6 +171,34 @@ public class TextEditor extends Application {
         //if anything is pressed, mark as document as changed
         textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) { changed = true; }
+        });
+        
+        
+        //keyboard combinations
+        fileNew.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+        fileSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+        fileOpen.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        
+        editCut.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
+        editCopy.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
+        editPaste.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        
+        viewWordWrap.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
+        //create here to display keyboard shortcut label in menu
+        viewZoomIn.setAccelerator(new KeyCodeCombination(KeyCode.PLUS, KeyCombination.CONTROL_DOWN));
+        viewZoomDefault.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN));
+        viewZoomOut.setAccelerator(new KeyCodeCombination(KeyCode.MINUS, KeyCombination.CONTROL_DOWN));
+        //and make it work here because viewZoomIn.setAccelerator doesn't want to work
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            KeyCombination codeCombo = new KeyCodeCombination(KeyCode.PLUS, KeyCombination.CONTROL_DOWN);
+            KeyCombination codeCombo2 = new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+
+            @Override
+            public void handle(KeyEvent event) {
+                if (codeCombo.match(event) || codeCombo2.match(event)) {
+                    viewZoomIn.fire();
+                }
+            }
         });
         
         //confirm saving on each exit
@@ -416,9 +448,11 @@ public class TextEditor extends Application {
         }
     }
     
+    //zoom functions for view menu
     void zoomDefault() {
         textArea.setFont(new Font(13));
     }
+    
     void zoomIn() {
         textArea.setFont(new Font(textArea.getFont().getSize() + 1));
     }
