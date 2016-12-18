@@ -42,8 +42,11 @@ import javafx.stage.Stage;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.IndexRange;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.FlowPane;
 
 public class TextEditor extends Application {
@@ -58,6 +61,10 @@ public class TextEditor extends Application {
     private Scene scene = new Scene(root, 640, 480);
     private static TextEditor t = new TextEditor();
     protected static Class tc = t.getClass();
+    private String clipboardText = "";
+    private final Clipboard clipboard = Clipboard.getSystemClipboard();
+    private final ClipboardContent clipboardContent = new ClipboardContent();
+    
 
     
     @Override
@@ -129,6 +136,14 @@ public class TextEditor extends Application {
         });
         fileSave.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) { saveFile(); }
+        });
+        
+        editCopy.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { copyText(); }
+        });
+        
+        editCut.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) { cutText(); }
         });
         
         viewWordWrap.setOnAction(new EventHandler<ActionEvent>() {
@@ -225,7 +240,6 @@ public class TextEditor extends Application {
             @Override
             public void handle(ActionEvent e)
             {
-
                 Application a = new Application() {
 
                     @Override
@@ -234,7 +248,6 @@ public class TextEditor extends Application {
                     }
                 };
                 a.getHostServices().showDocument("http://www.github.com/the-octagon");
-
             }
         });
 
@@ -248,11 +261,36 @@ public class TextEditor extends Application {
 
         alert.showAndWait();
     }
+    
+    //copy selected text
+    void copyText() {
+        if(!textArea.getSelectedText().equals("")) {
+            clipboardText = textArea.getSelectedText();
+        clipboardContent.putString(clipboardText);
+        clipboard.setContent(clipboardContent);
+        }
+    }
 
+    //copy selected text
+    void cutText() {
+        if(!textArea.getSelectedText().equals("")) {
+            clipboardText = textArea.getSelectedText();
+            clipboardContent.putString(clipboardText);
+            clipboard.setContent(clipboardContent);
+            IndexRange range = textArea.getSelection();
+            String origText = textArea.getText();
+            String beforeText = origText.substring(0, range.getStart());
+            String afterText = origText.substring(range.getEnd(), origText.length());
+            textArea.setText( beforeText + afterText );
+            textArea.positionCaret( range.getStart() );
+        }
+    }
+    
+    //used for updating the window title
     static Stage getStage() { return stage; }
 
         //open dialog with info about license
-    static void licenseDialog() {
+    void licenseDialog() {
         Alert alert = new Alert(AlertType.INFORMATION);
         File gplFile = new File("./images/gplv3-88x31.png");
         URL url = tc.getResource("/gplv3-88x31.png");
